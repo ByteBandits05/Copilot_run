@@ -13,15 +13,15 @@ targets:
   dev:
     default: true  # Set 'dev' as the default deployment target
     workspace:
-      host: "${{ secrets.DATABRICKS_HOST }}"  # Databricks workspace host (from GitHub Secrets)
-      root_path: "/Workspace/Users/${{ secrets.DATABRICKS_USER }}/dev"  # Root path for dev environment
+      host: https://dbc-d56de9ca-1926.cloud.databricks.com/ 
+      root_path: "/Workspace/pipa/dev"  # Root path for dev environment
   qa:
     workspace:
-      host: "${{ secrets.DATABRICKS_HOST_QA }}"  # QA workspace host (from GitHub Secrets or env vars)
-      root_path: "/Workspace/Users/${{ secrets.DATABRICKS_USER }}/qa"  # Root path for QA environment
+      host: https://dbc-d56de9ca-1926.cloud.databricks.com/
+      root_path: "/Workspace/Users/pipa/qa"  # Root path for QA environment
   prod:
     workspace:
-      host: "${{ secrets.DATABRICKS_HOST_PROD }}"  # Prod workspace host (from GitHub Secrets or env vars)
-      root_path: "/Workspace/Users/${{ secrets.DATABRICKS_USER }}/prod"  # Root path for Prod environment
+      host: https://dbc-d56de9ca-1926.cloud.databricks.com/
+      root_path: "/Workspace/Users/pipa/prod"  # Root path for Prod environment
 
 # No jobs or resources are defined in this bundle file
