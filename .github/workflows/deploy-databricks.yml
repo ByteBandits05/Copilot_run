@@ -9,10 +9,14 @@ on:
     branches: [main]
   workflow_dispatch:
 
+
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
     steps:
       # Checkout the repository
       - name: Checkout repository
@@ -25,26 +29,26 @@ jobs:
       # Validate the Databricks Asset Bundle
       - name: Validate Databricks Bundle
         run: databricks bundle validate
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        # env:
+        #   DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+        #   DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
       # Deploy the Databricks Asset Bundle to the 'dev' environment
       - name: Deploy Databricks Bundle (dev)
         run: databricks bundle deploy --target dev --force-lock
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        # env:
+        #   DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+        #   DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
           
       - name: Deploy run Pytest (dev)
         run: databricks bundle run pytest --target dev
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        # env:
+        #   DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+        #   DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
       - name: Deploy run smoketest (dev)
         run: databricks bundle run smoke_test --target dev
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        # env:
+        #   DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+        #   DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
