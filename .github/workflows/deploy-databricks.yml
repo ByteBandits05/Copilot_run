@@ -17,9 +17,7 @@ jobs:
   build-and-deploy:
     name: Build & Deploy (${{ github.event.inputs.environment || 'dev' }})
     runs-on: ubuntu-latest
-    env:
-      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_${{ github.event.inputs.environment || 'DEV' | upper }} }}
-      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_${{ github.event.inputs.environment || 'DEV' | upper }} }}
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
