@@ -37,7 +37,6 @@ resources:
         enabled: true
       performance_target: STANDARD
 
-  jobs:
     smoke_test:
       name: smoke_test
       tasks:
