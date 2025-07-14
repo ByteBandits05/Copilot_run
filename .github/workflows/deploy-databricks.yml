@@ -29,7 +29,7 @@ jobs:
       - name: Setup Databricks CLI
         uses: databricks/setup-cli@main
 
-      # Create ~/.databrickscfg with correct permissions and set config profile
+      # 1. Create the CLI config file
       - name: Configure Databricks CLI credentials
         run: |
           echo "[DEFAULT]" > ~/.databrickscfg
@@ -40,6 +40,11 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
+      # 2. (Optional) Show config (for debug, remove after)
+      - name: Debug config file
+        run: head -n 5 ~/.databrickscfg
+
+      # 3. Validate (with only profile, NOT HOST/TOKEN as env)
       - name: Validate Databricks Bundle
         run: databricks bundle validate
         env:
