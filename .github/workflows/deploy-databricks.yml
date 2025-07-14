@@ -15,7 +15,8 @@ on:
         type: choice
         options:
           - dev
-          - main
+          - qa
+          - prod
 
 jobs:
   deploy:
@@ -28,14 +29,18 @@ jobs:
       - name: Setup Databricks CLI
         uses: databricks/setup-cli@main
 
-      - name: Validate Databricks Bundle
-        run: databricks bundle validate
+      # Setup Databricks CLI credentials for v2+ (unified auth)
+      - name: Configure Databricks CLI credentials
+        run: |
+          echo "[DEFAULT]" > ~/.databrickscfg
+          echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
+          echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
+      - name: Validate Databricks Bundle
+        run: databricks bundle validate
+
       - name: Deploy Databricks Bundle
-        run: databricks bundle deploy --target ${{ github.event.inputs.environment }} --force-lock
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: databricks bundle deploy --target ${{ github.event.inputs.environment || 'dev' }} --force-lock
