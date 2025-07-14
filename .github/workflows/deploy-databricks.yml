@@ -1,56 +1,59 @@
-# .github/workflows/deploy-databricks.yml
-name: Deploy Databricks Bundle
+name: Databricks CI/CD Pipeline
 
 on:
   push:
-    branches: 
-      - main
-      - dev
+    branches: [main]
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Select deployment environment'
-        required: true
-        default: dev
         type: choice
+        description: Target environment
         options:
           - dev
           - qa
           - prod
 
 jobs:
-  deploy:
-    name: Deploy
+  build-and-deploy:
+    name: Build & Deploy (${{ github.event.inputs.environment || 'dev' }})
     runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_${{ github.event.inputs.environment || 'DEV' | upper }} }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_${{ github.event.inputs.environment || 'DEV' | upper }} }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Databricks CLI
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Run unit tests
+        run: pytest tests/
+
+      - name: Set up Databricks CLI
         uses: databricks/setup-cli@main
 
-      # 1. Create the CLI config file
-      - name: Configure Databricks CLI credentials
-        run: |
-          echo "[DEFAULT]" > ~/.databrickscfg
-          echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
-          echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
-          chmod 600 ~/.databrickscfg
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      - name: pipaa
+        run: echo ${{ github.event.inputs.environment || 'DEV' | upper }}
 
-      # 2. (Optional) Show config (for debug, remove after)
-      - name: Debug config file
-        run: head -n 5 ~/.databrickscfg
 
-      # 3. Validate (with only profile, NOT HOST/TOKEN as env)
       - name: Validate Databricks Bundle
         run: databricks bundle validate
-        env:
-          DATABRICKS_CONFIG_PROFILE: DEFAULT
 
+        
       - name: Deploy Databricks Bundle
-        run: databricks bundle deploy --target ${{ github.event.inputs.environment || 'dev' }} --force-lock
-        env:
-          DATABRICKS_CONFIG_PROFILE: DEFAULT
+        run: databricks bundle deploy --target ${{ github.event.inputs.environment || 'dev' }}
+
+      - name: Run Smoke Tests
+        run: python scripts/smoke_tests.py
+
+      - name: Log deployment success
+        if: success()
+        run: echo "Deployment completed successfully for ${{ github.event.inputs.environment || 'dev' }} at $(date)"
+
+      - name: Log deployment failure
+        if: failure()
+        run: echo "Deployment failed for ${{ github.event.inputs.environment || 'dev' }} at $(date)"
+ 
