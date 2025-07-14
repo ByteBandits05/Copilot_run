@@ -14,14 +14,14 @@ targets:
     default: true  # Set 'dev' as the default deployment target
     workspace:
       host: https://dbc-d56de9ca-1926.cloud.databricks.com/ 
-      root_path: "/Workspace/pipa/dev"  # Root path for dev environment
+      root_path: "/Workspace/pipa2/dev"  # Root path for dev environment
   qa:
     workspace:
       host: https://dbc-d56de9ca-1926.cloud.databricks.com/
-      root_path: "/Workspace/Users/pipa/qa"  # Root path for QA environment
+      root_path: "/Workspace/Users/pipa2/qa"  # Root path for QA environment
   prod:
     workspace:
       host: https://dbc-d56de9ca-1926.cloud.databricks.com/
-      root_path: "/Workspace/Users/pipa/prod"  # Root path for Prod environment
+      root_path: "/Workspace/Users/pipa2/prod"  # Root path for Prod environment
 
 # No jobs or resources are defined in this bundle file
